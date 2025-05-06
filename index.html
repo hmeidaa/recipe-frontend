@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Recipe Management</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+  <div class="container mt-5">
+    <h1 class="mb-4">Recipe Manager</h1>
+
+    <!-- Form to Add a Recipe -->
+    <div class="card p-4 mb-5">
+      <h4>Add New Recipe</h4>
+      <form id="recipeForm">
+        <div class="mb-3">
+          <label for="title" class="form-label">Title</label>
+          <input type="text" class="form-control" id="title" required>
+        </div>
+        <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea class="form-control" id="description" rows="3" required></textarea>
+        </div>
+        <div class="mb-3">
+          <label for="ingredients" class="form-label">Ingredients (comma-separated)</label>
+          <input type="text" class="form-control" id="ingredients" required>
+        </div>
+        <div class="mb-3">
+          <label for="instructions" class="form-label">Instructions</label>
+          <textarea class="form-control" id="instructions" rows="3" required></textarea>
+        </div>
+        <div class="mb-3">
+          <label for="category" class="form-label">Category</label>
+          <input type="text" class="form-control" id="category">
+        </div>
+        <div class="mb-3">
+          <label for="prepTime" class="form-label">Preparation Time (minutes)</label>
+          <input type="number" class="form-control" id="prepTime">
+        </div>
+        <div class="mb-3">
+          <label for="cookTime" class="form-label">Cooking Time (minutes)</label>
+          <input type="number" class="form-control" id="cookTime">
+        </div>
+        <button type="submit" class="btn btn-primary">Submit Recipe</button>
+      </form>
+    </div>
+
+    <!-- Display Recipes -->
+    <h4>All Recipes</h4>
+    <div id="recipeList" class="row gy-3"></div>
+  </div>
+
+  <script>
+    const baseURL = 'https://recipeapi-qpai.onrender.com/recipes';
+
+    // Fetch and display recipes
+    async function fetchRecipes() {
+      const res = await fetch(baseURL);
+      const recipes = await res.json();
+      const container = document.getElementById('recipeList');
+      container.innerHTML = '';
+
+      recipes.forEach(r => {
+        const col = document.createElement('div');
+        col.className = 'col-md-6';
+        col.innerHTML = `
+          <div class="card h-100">
+            <div class="card-body">
+              <h5 class="card-title">${r.title}</h5>
+              <p><strong>Description:</strong> ${r.description}</p>
+              <p><strong>Ingredients:</strong> ${r.ingredients.join(', ')}</p>
+              <p><strong>Instructions:</strong> ${r.instructions}</p>
+              <p><strong>Category:</strong> ${r.category || '-'}</p>
+              <p><strong>Prep Time:</strong> ${r.prepTime || 0} min</p>
+              <p><strong>Cook Time:</strong> ${r.cookTime || 0} min</p>
+            </div>
+          </div>`;
+        container.appendChild(col);
+      });
+    }
+
+    // Submit form handler
+    document.getElementById('recipeForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const recipe = {
+        title: document.getElementById('title').value,
+        description: document.getElementById('description').value,
+        ingredients: document.getElementById('ingredients').value.split(',').map(i => i.trim()),
+        instructions: document.getElementById('instructions').value,
+        category: document.getElementById('category').value,
+        prepTime: parseInt(document.getElementById('prepTime').value) || 0,
+        cookTime: parseInt(document.getElementById('cookTime').value) || 0
+      };
+
+      await fetch(baseURL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(recipe)
+      });
+
+      e.target.reset();
+      fetchRecipes();
+    });
+
+    // Initial load
+    fetchRecipes();
+  </script>
+</body>
+</html>
