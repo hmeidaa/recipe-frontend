@@ -27,20 +27,16 @@
           <input type="text" class="form-control" id="ingredients" required>
         </div>
         <div class="mb-3">
-          <label for="instructions" class="form-label">Instructions</label>
+          <label for="instructions" class="form-label">Instructions (one per line)</label>
           <textarea class="form-control" id="instructions" rows="3" required></textarea>
         </div>
         <div class="mb-3">
           <label for="category" class="form-label">Category</label>
-          <input type="text" class="form-control" id="category">
-        </div>
-        <div class="mb-3">
-          <label for="prepTime" class="form-label">Preparation Time (minutes)</label>
-          <input type="number" class="form-control" id="prepTime">
+          <input type="text" class="form-control" id="category" required>
         </div>
         <div class="mb-3">
           <label for="cookTime" class="form-label">Cooking Time (minutes)</label>
-          <input type="number" class="form-control" id="cookTime">
+          <input type="number" class="form-control" id="cookTime" required>
         </div>
         <button type="submit" class="btn btn-primary">Submit Recipe</button>
       </form>
@@ -70,10 +66,9 @@
               <h5 class="card-title">${r.title}</h5>
               <p><strong>Description:</strong> ${r.description}</p>
               <p><strong>Ingredients:</strong> ${r.ingredients.join(', ')}</p>
-              <p><strong>Instructions:</strong> ${r.instructions}</p>
-              <p><strong>Category:</strong> ${r.category || '-'}</p>
-              <p><strong>Prep Time:</strong> ${r.prepTime || 0} min</p>
-              <p><strong>Cook Time:</strong> ${r.cookTime || 0} min</p>
+              <p><strong>Instructions:</strong> ${r.instructions.join('<br>')}</p>
+              <p><strong>Category:</strong> ${r.category}</p>
+              <p><strong>Cooking Time:</strong> ${r.cookingTime} min</p>
             </div>
           </div>`;
         container.appendChild(col);
@@ -87,10 +82,9 @@
         title: document.getElementById('title').value,
         description: document.getElementById('description').value,
         ingredients: document.getElementById('ingredients').value.split(',').map(i => i.trim()),
-        instructions: document.getElementById('instructions').value,
+        instructions: document.getElementById('instructions').value.split('\n').map(i => i.trim()),
         category: document.getElementById('category').value,
-        prepTime: parseInt(document.getElementById('prepTime').value) || 0,
-        cookTime: parseInt(document.getElementById('cookTime').value) || 0
+        cookingTime: parseInt(document.getElementById('cookTime').value) || 1
       };
 
       await fetch(baseURL, {
